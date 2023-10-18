@@ -1,15 +1,20 @@
 package com.sky.service.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.PasswordConstant;
 import com.sky.constant.StatusConstant;
+import com.sky.context.BaseContext;
 import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
+import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.entity.Employee;
 import com.sky.exception.AccountLockedException;
 import com.sky.exception.AccountNotFoundException;
 import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
+import com.sky.result.PageResult;
 import com.sky.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +23,8 @@ import org.springframework.util.DigestUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
+import java.util.List;
+
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -61,11 +68,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
 
+
     /**
      * 新增员工
-     *
-     * @param employeeLoginDTO
-     * @return
+     * @param employeeDTO
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
      */
     public void save(EmployeeDTO employeeDTO) throws InvocationTargetException, IllegalAccessException {
         Employee employee = new Employee();
@@ -83,6 +91,65 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setUpdateUser(100L);
         employeeMapper.insert(employee);
 
+    }
+
+    /**
+     * 分页查询
+     * @param employeePageQueryDTO
+     * @return
+     */
+    @Override
+    public PageResult pageQuary(EmployeePageQueryDTO employeePageQueryDTO) {
+        PageHelper.startPage(employeePageQueryDTO.getPage(), employeePageQueryDTO.getPageSize());
+
+        Page<Employee> page = employeeMapper.pageQuery(employeePageQueryDTO);
+
+        long total = page.getTotal();
+        List<Employee> records = page.getResult();
+
+        return new PageResult(total, records);
+    }
+
+    /**
+     * 启用禁用用户账号
+     * @param status
+     * @param id
+     */
+
+    @Override
+    public void StartOrStop(Integer status, long id) {
+        Employee employee = Employee.builder()
+                .status(status)
+                .id(id)
+                .build();
+        employeeMapper.update(employee);
+    }
+
+    /**
+     * 根据ID查询员工
+     * @param id
+     * @return
+     */
+    @Override
+    public Employee getById(long id) {
+
+        Employee employee = employeeMapper.getById(id);
+        employee.setPassword("*****");
+        return employee;
+    }
+
+    /**
+     * 员工编辑
+     * @param employeeDTO
+     */
+    @Override
+    public void update(EmployeeDTO employeeDTO) throws InvocationTargetException, IllegalAccessException {
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(employeeDTO, employee);
+        employee.setUpdateTime(LocalDateTime.now());
+        employee.setCreateUser(BaseContext.getCurrentId());
+
+        employeeMapper.update(employee);
     }
 
 }

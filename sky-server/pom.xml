@@ -85,6 +85,12 @@
             <groupId>com.github.xiaoymin</groupId>
             <artifactId>knife4j-spring-boot-starter</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-cbor</artifactId>
+            <version>2.13.3</version> <!-- 使用你的 Jackson 版本 -->
+        </dependency>
+
         <!-- BeanUtils的依赖 -->
         <dependency>
             <groupId>commons-beanutils</groupId>
