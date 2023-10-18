@@ -12,6 +12,7 @@ import com.sky.service.EmployeeService;
 import com.sky.utils.JwtUtil;
 import com.sky.vo.EmployeeLoginVO;
 import io.swagger.annotations.ApiOperation;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -133,6 +134,7 @@ public class EmployeeController {
      * @param employeeDTO
      * @return
      */
+    @SneakyThrows
     @PutMapping()
     @ApiOperation("员工编辑")
     public Result update(@RequestBody EmployeeDTO employeeDTO){
